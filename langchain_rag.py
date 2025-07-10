@@ -1,12 +1,26 @@
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatAnthropic
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from llm_manager import GeminiLLMManager
 import os
 
-# Load documents
+# List of Gemini API keys (fallback supported)
+API_KEYS = [
+    "AIzaSyAAx6gaP1F46GVYbpiA3RVINS-Zlhw9FFs",
+    "AIzaSyAnotherKeyExample1234567890",
+    "AIzaSyBackupKeyExample0987654321"
+]
+
+# Initialize Gemini LLM with fallback support
+manager = GeminiLLMManager(api_keys=API_KEYS)
+llm = manager.get_llm()
+
+if not llm:
+    print("❌ No working Gemini LLM available. Exiting.")
+    exit()
+
+# Load project files
 file_paths = [
     'build.gradle',
     'settings.gradle',
@@ -22,33 +36,32 @@ for path in file_paths:
         loader = TextLoader(path)
         documents.extend(loader.load())
 
-print(documents)
-# Split documents
-# splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-# docs = splitter.split_documents(documents)
+# Split documents into chunks
+splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+docs = splitter.split_documents(documents)
 
-# # Embed documents using local model
-# embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-# db = FAISS.from_documents(docs, embedding_model)
+# Combine all chunks into a single context string
+context = "\n\n".join([doc.page_content for doc in docs])
 
-# # Create retriever
-# retriever = db.as_retriever()
+# Define prompt template
+prompt_template = PromptTemplate(
+    input_variables=["context", "question"],
+    template="""
+You are an assistant that answers questions based on the following Spring Boot project files:
 
-# # Set up Claude via LangChain
-# llm = ChatAnthropic(
-#     model="claude-3-sonnet-20240229",  # or claude-3-haiku
-#     temperature=0,
-#     max_tokens=1024,
-#     anthropic_api_key="your_claude_api_key"
-# )
+{context}
 
-# # Create RAG chain
-# qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+Question: {question}
+Answer:"""
+)
 
-# # Interactive loop
-# while True:
-#     query = input("\nAsk a question about your Spring Boot project (or type 'exit'): ")
-#     if query.lower() == 'exit':
-#         break
-#     answer = qa_chain.run(query)
-#     print("\n🧠 Answer:\n", answer)
+# Create LLM chain
+qa_chain = LLMChain(llm=llm, prompt=prompt_template)
+
+# Interactive loop
+while True:
+    query = input("\nAsk a question about your Spring Boot project (or type 'exit'): ")
+    if query.lower() == 'exit':
+        break
+    answer = qa_chain.invoke({"context": context, "question": query})
+    print("\n🧠 Answer:\n", answer)
