@@ -1,0 +1,2 @@
+requirement,output,timestamp
+generate a sample hello world application,There is no current event loop in thread 'AnyIO worker thread'.,2025-07-20 19:03:20.716905
