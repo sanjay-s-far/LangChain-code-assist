@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+##############################################################################
+#
+# Gradle wrapper script for UNIX systems.
+#
+#
+# To use this script, add it to your project under version control together with the gradle-wrapper.jar file.
+#
+#
+# Add the following to your .gitignore file:
+#   gradle-wrapper.jar
+#
+#
+# To execute this script, run:
+#      ./gradlew <task> ...
+#
+#
+# You can find more details about the gradle wrapper at http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
+#
+##############################################################################
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS=""
+
+APP_BASE_NAME=`basename "$0"`
+APP_HOME=`dirname "$0"`
+
+# Use supplied JAVA_HOME if available
+if [ -n "$JAVA_HOME" ] ; then
+  JAVA="$JAVA_HOME/bin/java"
+else
+  JAVA=`which java`
+  if [ ! -x "$JAVA" ] ; then
+    echo "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH."
+    exit 1
+  fi
+fi
+
+CLASSPATH="$APP_HOME/gradle-wrapper.jar"
+
+# Determine the distribution home directory based on the name of the distribution zip file.
+GRADLE_DIST_URL=https://services.gradle.org/distributions/gradle-8.5-bin.zip
+
+# Execute Gradle
+exec "$JAVA" $DEFAULT_JVM_OPTS -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"

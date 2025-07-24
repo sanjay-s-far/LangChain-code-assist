@@ -1,0 +1,193 @@
+Okay, here's a minimal Spring Boot project named `zxc` with the specifications you requested. I'll provide the necessary files and explain the key parts:
+
+**1. Project Structure**
+
+```
+zxc/
+├── build.gradle
+├── settings.gradle
+├── gradle/wrapper/
+│   ├── gradle-wrapper.jar
+│   └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+└── src/
+    └── main/
+        └── java/
+            └── com/example/zxc/
+                ├── ZxcApplication.java
+                └── controller/
+                    └── HelloController.java
+                └── config/
+                    └── SecurityConfig.java
+```
+
+**2. `settings.gradle`**
+
+```gradle
+rootProject.name = 'zxc'
+```
+
+**3. `build.gradle`**
+
+```gradle
+plugins {
+    id 'org.springframework.boot' version '3.2.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Add Security
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+**Explanation:**
+
+*   **Plugins:**  Uses the Spring Boot and dependency management plugins.
+*   **`java { sourceCompatibility = '17' }`:** Configures Java 17.
+*   **Dependencies:**
+    *   `spring-boot-starter-web`:  For building web applications (includes Spring MVC, Tomcat).
+    *   `spring-boot-starter-security`: For adding spring security.
+    *   `spring-boot-starter-test`: For testing.
+
+**4. `src/main/java/com/example/zxc/ZxcApplication.java`**
+
+```java
+package com.example.zxc;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ZxcApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ZxcApplication.class, args);
+    }
+
+}
+```
+
+**5. `src/main/java/com/example/zxc/controller/HelloController.java`**
+
+```java
+package com.example.zxc.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+
+    @GetMapping("/secured")
+    public String secured() {
+        return "This is a secured endpoint!";
+    }
+}
+```
+
+**6. `src/main/java/com/example/zxc/config/SecurityConfig.java`**
+
+```java
+package com.example.zxc.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/secured").authenticated() // Secure the /secured endpoint
+                        .anyRequest().permitAll()  // Allow all other requests
+                )
+                .httpBasic(withDefaults()); // Enable basic HTTP authentication
+        return http.build();
+    }
+}
+```
+
+**Explanation of `SecurityConfig.java`:**
+
+*   **`@Configuration` and `@EnableWebSecurity`:**  Marks this class as a configuration class for Spring Security.
+*   **`userDetailsService()`:** Creates an in-memory user.  **Important:**  In a real application, you would retrieve user details from a database or other source.  The `withDefaultPasswordEncoder()` is *not* recommended for production; use a strong, proper password encoder like BCrypt.
+*   **`filterChain(HttpSecurity http)`:** Configures the security filter chain:
+    *   `authorizeHttpRequests`: Defines authorization rules.
+        *   `requestMatchers("/secured").authenticated()`:  Requires authentication to access the `/secured` endpoint.
+        *   `anyRequest().permitAll()`: Allows unauthenticated access to all other endpoints.
+    *   `httpBasic(withDefaults())`: Enables HTTP Basic authentication.  This will prompt the user for a username and password in the browser.
+
+**7. Gradle Wrapper**
+
+You need to create the Gradle wrapper files.  Run this command in the root directory of your project:
+
+```bash
+gradle wrapper --gradle-version=8.5
+```
+
+This will generate the `gradlew` (for Linux/macOS) and `gradlew.bat` (for Windows) files, as well as the `gradle/wrapper` directory.  The Gradle wrapper allows you to run the project without requiring users to have Gradle installed globally.
+
+**How to Run the Project**
+
+1.  **Build:**  In the project's root directory, run `./gradlew build` (or `gradlew.bat build` on Windows).
+2.  **Run:**  Run `./gradlew bootRun` (or `gradlew.bat bootRun` on Windows).  Alternatively, you can run the generated JAR file in `build/libs`.
+
+**Testing the Endpoints**
+
+*   **`/hello`:**  Open your browser or use `curl` to access `http://localhost:8080/hello`. You should see "Hello, World!".
+*   **`/secured`:**  Open your browser or use `curl` to access `http://localhost:8080/secured`.  You will be prompted for a username and password.  Enter `user` as the username and `password` as the password.  You should then see "This is a secured endpoint!".  If you don't provide the credentials, you'll get a 401 Unauthorized error.
+
+**Important Considerations:**
+
+*   **Security:**  This example uses basic HTTP authentication and an in-memory user store.  **This is not suitable for production.**  You should use a proper authentication mechanism (e.g., OAuth 2.0, JWT) and store user credentials securely in a database with proper password hashing (e.g., BCrypt).
+*   **Error Handling:**  This is a very basic example and doesn't include error handling.  You should add appropriate exception handling and logging.
+*   **Configuration:**  You can configure the application using `application.properties` or `application.yml` files in the `src/main/resources` directory.  For example, you can change the port number.
+*   **Dependencies:**  Make sure to check for the latest versions of Spring Boot and Gradle.  The versions I used in this example are current as of now, but they may change.
+*   **Gradle Wrapper:**  Always commit the Gradle wrapper files (`gradlew`, `gradlew.bat`, and the `gradle/wrapper` directory) to your repository.  This ensures that everyone working on the project uses the same Gradle version.
+
+This provides a functional, minimal Spring Boot project with the requested features. Remember to adapt it to your specific needs and security requirements.

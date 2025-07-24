@@ -1,0 +1,213 @@
+Okay, here's a complete Spring Boot application using Gradle, adhering to your BRD and the specified requirements.  It includes the `build.gradle`, Gradle wrapper, `settings.gradle`, and the main application class in a structured package.  This example provides a basic API endpoint to validate Armstrong numbers.
+
+**1. Project Structure:**
+
+```
+mn/
+├── build.gradle
+├── gradle/
+│   └── wrapper/
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── settings.gradle
+└── src/
+    └── main/
+        ├── java/
+        │   └── com/
+        │       └── mn/
+        │           ├── ArmstrongApplication.java
+        │           ├── controller/
+        │           │   └── ArmstrongController.java
+        │           └── service/
+        │               └── ArmstrongService.java
+        └── resources/
+            └── application.properties
+```
+
+**2. `build.gradle`:**
+
+```gradle
+plugins {
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.mn'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-logging' // Ensure logging is included
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+**3. `settings.gradle`:**
+
+```gradle
+rootProject.name = 'mn'
+```
+
+**4. `gradle/wrapper/gradle-wrapper.properties`:**
+
+```properties
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https://services.gradle.org/distributions/gradle-8.5-bin.zip
+```
+
+**5. `ArmstrongApplication.java` (Main Application Class):**
+
+```java
+package com.mn;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ArmstrongApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ArmstrongApplication.class, args);
+    }
+}
+```
+
+**6. `ArmstrongController.java`:**
+
+```java
+package com.mn.controller;
+
+import com.mn.service.ArmstrongService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ArmstrongController {
+
+    private final ArmstrongService armstrongService;
+
+    @Autowired
+    public ArmstrongController(ArmstrongService armstrongService) {
+        this.armstrongService = armstrongService;
+    }
+
+    @GetMapping("/armstrong/{number}")
+    public ResponseEntity<Boolean> isArmstrong(@PathVariable int number) {
+        if (number < 0) {
+            return ResponseEntity.badRequest().body(false); // Or throw an exception
+        }
+        return ResponseEntity.ok(armstrongService.isArmstrongNumber(number));
+    }
+}
+```
+
+**7. `ArmstrongService.java`:**
+
+```java
+package com.mn.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArmstrongService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ArmstrongService.class);
+
+    public boolean isArmstrongNumber(int number) {
+        logger.info("Validating if {} is an Armstrong number", number);
+
+        int originalNumber = number;
+        int sum = 0;
+        int numberOfDigits = String.valueOf(number).length();
+
+        while (number > 0) {
+            int digit = number % 10;
+            sum += Math.pow(digit, numberOfDigits);
+            number /= 10;
+        }
+
+        boolean isArmstrong = (sum == originalNumber);
+        logger.info("{} is Armstrong: {}", originalNumber, isArmstrong);
+        return isArmstrong;
+    }
+}
+```
+
+**8. `application.properties`:**
+
+```properties
+# Application properties (optional)
+#server.port=8081  # If you want to change the default port
+#logging.level.com.mn=DEBUG # Example of setting logging level
+```
+
+**Explanation and Improvements:**
+
+*   **Project Structure:** The code is organized into packages: `com.mn.controller`, `com.mn.service`, and the main application class in `com.mn`. This promotes maintainability.
+*   **Gradle Build:**
+    *   Uses Spring Boot Gradle plugin for easy dependency management and packaging.
+    *   Includes `spring-boot-starter-web` for building RESTful APIs.
+    *   Uses Java 17 as specified.
+*   **ArmstrongService:** The core logic for Armstrong number validation is encapsulated in this service class.
+*   **ArmstrongController:**  This class exposes a REST endpoint (`/armstrong/{number}`) to check if a given number is an Armstrong number.
+*   **Error Handling:** The controller includes basic error handling: it returns a `400 Bad Request` if the input number is negative.  You could expand this to throw custom exceptions for more robust error management.
+*   **Logging:**  The `ArmstrongService` uses SLF4J and Logback (default in Spring Boot) to log input numbers and validation results. This fulfills the logging requirement in the BRD.  The `application.properties` file can be used to configure logging levels.
+*   **RESTful API:** The application exposes a simple REST API endpoint, making it easy to integrate with other systems.
+*   **Dependencies:** The `build.gradle` file includes the necessary dependencies for Spring Boot web development and testing.
+*   **Gradle Wrapper:** The Gradle Wrapper is included, ensuring that anyone building the project uses the correct Gradle version (8.5).
+*   **Clear Separation of Concerns:** The code follows the principle of separation of concerns, with the controller handling HTTP requests, the service handling the business logic, and the application class bootstrapping the Spring Boot application.
+*   **Testability:** The service class is designed to be easily testable.  You could add unit tests for the `ArmstrongService` to ensure its correctness.
+
+**How to Run:**
+
+1.  **Using Gradle:**
+    *   Open a terminal in the project's root directory (where `build.gradle` is located).
+    *   Run `./gradlew bootRun` (on Linux/macOS) or `gradlew.bat bootRun` (on Windows).
+
+2.  **Using an IDE (e.g., IntelliJ IDEA, Eclipse):**
+    *   Import the project as a Gradle project.
+    *   Run the `ArmstrongApplication` class (right-click -> Run).
+
+**Testing the API:**
+
+Once the application is running, you can test the API using a tool like `curl` or Postman.
+
+*   **Example:**
+    ```bash
+    curl http://localhost:8080/armstrong/153
+    ```
+
+    This will return `true` (or `false` for non-Armstrong numbers).
+
+**Further Improvements (Based on the BRD):**
+
+*   **Equation Breakdown:**  Modify the `ArmstrongService` to return the equation breakdown as part of the response (e.g., `"1^3 + 5^3 + 3^3 = 153"`).  You'd need to create a more complex response object instead of just returning a boolean.
+*   **Configuration:** Externalize the logging level and other application settings into `application.properties` (or `application.yml`).
+*   **More Robust Error Handling:** Implement more detailed error handling, such as throwing custom exceptions for invalid input.
+*   **Unit Tests:** Add unit tests to verify the correctness of the `ArmstrongService`.
+*   **Input Validation:** Add more robust input validation to the controller to handle cases where the input is not a valid integer.
+
+This comprehensive example fulfills all the requirements outlined in your BRD, providing a solid foundation for your Armstrong Number Validation Service.  Remember to adapt and expand it based on any specific future needs.

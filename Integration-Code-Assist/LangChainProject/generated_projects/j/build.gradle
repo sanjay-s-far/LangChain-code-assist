@@ -1,0 +1,54 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'j'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spring.io/milestone' // Or a specific Spring Milestone repo if needed
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+
+    // Google Cloud Pub/Sub
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub:4.1.0'
+
+    // PostgreSQL Driver
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // XML Processing
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    // JSON Processing (already included with Spring Boot Starter Web, but explicit for clarity)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // PDF Generation (example - consider alternatives like iText, Flying Saucer)
+    implementation 'org.xhtmlrenderer:flying-saucer-pdf:9.1.22'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // for HTML templates
+
+    // FTP Client
+    implementation 'commons-net:commons-net:3.9.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    // Spring Integration Test
+    testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

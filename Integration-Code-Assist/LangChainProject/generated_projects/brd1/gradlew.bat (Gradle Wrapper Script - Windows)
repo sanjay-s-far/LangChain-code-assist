@@ -1,0 +1,52 @@
+@REM
+@REM Gradle wrapper script for Windows systems.
+@REM
+@REM
+@REM To use this script, add it to your project under version control together with the gradle-wrapper.jar file.
+@REM
+@REM
+@REM Add the following to your .gitignore file:
+@REM   gradle-wrapper.jar
+@REM
+@REM
+@REM To execute this script, run:
+@REM      gradlew <task> ...
+@REM
+@REM
+@REM You can find more details about the gradle wrapper at http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
+@REM
+
+@echo off
+
+setlocal
+
+set APP_BASE_NAME=%~n0
+set APP_HOME=%~dp0
+
+if "%JAVA_HOME%"=="" (
+  set JAVA=java
+) else (
+  set JAVA="%JAVA_HOME%\bin\java"
+)
+
+if not exist "%JAVA%" (
+  echo.
+  echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+  echo.
+  echo Please set the JAVA_HOME variable in your environment to match the
+  echo location of your Java installation.
+  echo.
+  goto end
+)
+
+set CLASSPATH=%APP_HOME%\gradle-wrapper.jar
+
+@REM Determine the distribution home directory based on the name of the distribution zip file.
+set GRADLE_DIST_URL=https://services.gradle.org/distributions/gradle-8.5-bin.zip
+
+@REM Execute Gradle
+"%JAVA%" %DEFAULT_JVM_OPTS% -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+
+:end
+endlocal
+exit /b %errorlevel%

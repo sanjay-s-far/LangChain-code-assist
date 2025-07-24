@@ -1,0 +1,6 @@
+-- database: c:\Users\sd116131\LangChain-code-assist\Integration-Code-Assist\LangChainProject\Template_pr_memory\chroma.sqlite3
+
+SELECT * FROM collections;
+SELECT * FROM documents;
+SELECT * FROM metadatas;
+

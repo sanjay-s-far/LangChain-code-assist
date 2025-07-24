@@ -1,0 +1,1 @@
+These files are the Gradle wrapper scripts.  You can generate them by running `gradle wrapper` from the command line in the project directory *after* you have created the `build.gradle` file.  They allow you to run Gradle without having it installed locally, using the version specified in `gradle-wrapper.properties`.

@@ -1,0 +1,1 @@
+Create a file named `application.properties` (or `application.yml`) in the `src/main/resources` directory.  This is where you'd put your application-specific configuration.  For example:

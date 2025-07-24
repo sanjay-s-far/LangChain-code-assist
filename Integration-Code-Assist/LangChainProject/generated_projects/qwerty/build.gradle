@@ -1,0 +1,41 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.qwerty'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub:2.0.1'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // For DB interaction (add your DB driver)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    // Add your database driver here (e.g., MySQL, PostgreSQL)
+    // implementation 'mysql:mysql-connector-java'
+    // implementation 'org.postgresql:postgresql'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

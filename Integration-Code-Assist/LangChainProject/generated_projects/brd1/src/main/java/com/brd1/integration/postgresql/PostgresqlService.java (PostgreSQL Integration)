@@ -1,0 +1,22 @@
+package com.brd1.integration.postgresql;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class PostgresqlService {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public String executeQuery(String sql) throws Exception {
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(sql);
+        return objectMapper.writeValueAsString(results);
+    }
+}

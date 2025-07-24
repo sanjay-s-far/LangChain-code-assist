@@ -1,0 +1,15 @@
+package com.brd1;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan("com.brd1")  // Explicitly define component scan base package.  Important for a larger project.
+public class brd1Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(brd1Application.class, args);
+    }
+
+}

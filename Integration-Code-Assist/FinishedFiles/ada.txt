@@ -1,0 +1,187 @@
+Okay, here's a minimal Spring Boot project named "ada" with the specifications you provided.  I'll present the contents of each file.  Remember to create the directory structure as described.
+
+**1. `settings.gradle`**
+
+```gradle
+rootProject.name = 'ada'
+```
+
+**2. `build.gradle`**
+
+```gradle
+plugins {
+    id 'org.springframework.boot' version '3.2.3'  // Or the latest stable version
+    id 'io.spring.dependency-management' version '1.1.4' // Or the latest stable version
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+**3. `gradlew` and `gradlew.bat`**
+
+These are the Gradle wrapper files.  You can generate them by running the following command in your project directory:
+
+```bash
+gradle wrapper --gradle-version 8.5
+```
+
+This command will create `gradlew`, `gradlew.bat`, and the `gradle/wrapper` directory with the necessary files.  Make sure you have Gradle installed locally, or use the `sdkman` utility (or similar) to manage Gradle versions.
+
+**4. `src/main/java/com/example/ada/AdaApplication.java`**
+
+```java
+package com.example.ada;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AdaApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AdaApplication.class, args);
+    }
+
+}
+```
+
+**5. `src/main/java/com/example/ada/HelloController.java`**
+
+```java
+package com.example.ada;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, Ada!";
+    }
+
+    @GetMapping("/secured")
+    public String secured() {
+        return "This is a secured endpoint!";
+    }
+}
+```
+
+**6. `src/main/java/com/example/ada/SecurityConfig.java`**
+
+```java
+package com.example.ada;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/hello").permitAll()  // Allow /hello without authentication
+                        .anyRequest().authenticated() // Require authentication for all other requests
+                )
+                .httpBasic(withDefaults()) // Enable HTTP Basic authentication
+                .formLogin(withDefaults()); //Enable login form
+        return http.build();
+    }
+}
+```
+
+**Directory Structure:**
+
+```
+ada/
+├── build.gradle
+├── settings.gradle
+├── gradlew
+├── gradlew.bat
+├── gradle/
+│   └── wrapper/
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+└── src/
+    └── main/
+        └── java/
+            └── com/
+                └── example/
+                    └── ada/
+                        ├── AdaApplication.java
+                        ├── HelloController.java
+                        └── SecurityConfig.java
+```
+
+**Explanation:**
+
+*   **`settings.gradle`:** Defines the project name.
+*   **`build.gradle`:**  Configures the project's dependencies, plugins, and build settings. It uses the Spring Boot plugin, the Spring Dependency Management plugin, and the Java plugin.  It declares dependencies on `spring-boot-starter-web` (for web functionality), `spring-boot-starter-security` (for security), and `spring-boot-starter-test` (for testing).
+*   **`AdaApplication.java`:** The main entry point for the Spring Boot application.
+*   **`HelloController.java`:** Contains two sample endpoints:
+    *   `/hello`: A public endpoint that returns "Hello, Ada!".
+    *   `/secured`: A secured endpoint that requires authentication.
+*   **`SecurityConfig.java`:** Configures Spring Security.
+    *   It creates an in-memory user with the username "user" and password "password".  **Important:  In a real application, you would use a more secure user store (e.g., a database) and a proper password encoding mechanism.**
+    *   It configures HTTP Basic authentication.  It allows access to the `/hello` endpoint without authentication, but requires authentication for all other endpoints.
+
+**How to Run:**
+
+1.  Navigate to the project directory (`ada`).
+2.  Run `./gradlew bootRun` (or `gradlew.bat bootRun` on Windows).
+
+**Testing:**
+
+1.  Open a web browser or use a tool like `curl`.
+2.  Access `http://localhost:8080/hello`.  You should see "Hello, Ada!".
+3.  Access `http://localhost:8080/secured`.  You should be prompted for a username and password. Use "user" and "password". After successful authentication, you should see "This is a secured endpoint!".
+
+**Important Security Notes:**
+
+*   **In-Memory Authentication:** The in-memory user store is only suitable for development and testing.  **Do not use it in production.**  Use a database-backed user store (e.g., using Spring Data JPA) and a robust password encoding algorithm (e.g., `BCryptPasswordEncoder`).
+*   **HTTP Basic Authentication:** HTTP Basic authentication sends credentials in plain text (base64 encoded).  **Always use HTTPS (SSL/TLS) to encrypt the communication channel when using HTTP Basic authentication.**  In a production environment, consider using more secure authentication mechanisms like OAuth 2.0 or JWT.
+*   **CSRF Protection:**  For form-based logins, enable CSRF protection in Spring Security to prevent Cross-Site Request Forgery attacks.
+
+This example provides a basic starting point. You'll likely need to customize the security configuration and other aspects of the project to meet the specific requirements of your application.  Remember to prioritize security best practices.

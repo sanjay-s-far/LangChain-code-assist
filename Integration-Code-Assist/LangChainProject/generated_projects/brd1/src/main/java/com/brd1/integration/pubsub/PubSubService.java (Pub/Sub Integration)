@@ -1,0 +1,54 @@
+package com.brd1.integration.pubsub;
+
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.TopicName;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+@Service
+public class PubSubService {
+
+    private static final Logger logger = Logger.getLogger(PubSubService.class.getName());
+
+    @Value("${spring.cloud.gcp.project-id}")
+    private String projectId;
+
+    public void publishMessage(String topicName, String message) throws IOException, ExecutionException, InterruptedException {
+
+        TopicName topic = TopicName.of(projectId, topicName);
+        Publisher publisher = null;
+
+        try {
+            publisher = Publisher.newBuilder(topic).build();
+
+            ByteString data = ByteString.copyFromUtf8(message);
+            PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+
+            publisher.publish(pubsubMessage).get();
+            logger.info("Published message to topic: " + topicName);
+        } finally {
+            if (publisher != null) {
+                publisher.shutdown();
+                publisher.awaitTermination(5, TimeUnit.MINUTES);
+            }
+        }
+    }
+
+    // Implement your Pub/Sub subscriber logic here (e.g., using Spring Cloud GCP Pub/Sub)
+    // @Bean
+    // public PubSubInboundChannelAdapter messageChannelAdapter(
+    //        @Qualifier("pubsubInputChannel") MessageChannel inputChannel,
+    //        PubSubTemplate pubSubTemplate,
+    //        @Value("${pubsub.subscription}") String subscription) {
+    //    PubSubInboundChannelAdapter adapter =
+    //        new PubSubInboundChannelAdapter(pubSubTemplate, subscription);
+    //    adapter.setOutputChannel(inputChannel);
+    //    return adapter;
+    //}
+}

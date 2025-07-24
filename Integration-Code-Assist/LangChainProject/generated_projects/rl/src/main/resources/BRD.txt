@@ -1,0 +1,102 @@
+Multi-Function Data Integration and Transformation Application
+Prepared By: Development Team
+Date: July 23, 2025
+Version: 1.0
+
+1. Executive Summary
+This application is designed to facilitate seamless data exchange and transformation across various systems. It integrates with Google Pub/Sub, PostgreSQL, external APIs, and FTP systems. It also supports XML and JSON data formats and includes basic authentication for secure API access.
+2. Business Objectives
+
+Enable real-time messaging via Pub/Sub
+Read and write data to PostgreSQL
+Consume and expose APIs with basic authentication
+Convert and transform data between XML, JSON, and PDF formats
+Interface with FTP systems for file operations
+
+3. Functional Requirements
+3.1 Pub/Sub Integration
+3.1.1 Receive Messages from Pub/Sub
+
+Subscribe to a topic
+Parse and log incoming messages
+Trigger downstream processing
+
+3.1.2 Send Messages to Pub/Sub
+
+Publish messages to a specified topic
+Ensure message delivery confirmation
+
+Current Status: ✅ Implemented
+3.2 PostgreSQL Integration
+3.2.1 Read Data from PostgreSQL Table
+
+Connect using secure credentials
+Execute SELECT queries
+Return results in JSON format
+
+3.3 API Consumption and Exposure
+3.3.1 Read Data from External API
+
+Make authenticated HTTP requests
+Parse JSON/XML responses
+Handle errors and retries
+
+3.3.2 Convert Application to API with Basic Auth
+
+Expose internal logic as RESTful endpoints
+Implement basic authentication
+Log access and usage
+
+3.4 FTP System Integration
+3.4.1 Read XML File from FTP
+
+Connect to FTP directory
+Read and validate XML structure
+
+3.4.2 Write XML File to FTP
+
+Generate XML from internal data
+Save to FTP directory with proper naming conventions
+
+3.5 Data Transformation
+3.5.1 Convert XML to JSON
+
+Parse XML
+Map to JSON schema
+Handle nested structures
+
+3.5.2 Read XML and Convert to JSON and PDF
+
+Parse XML
+Convert to JSON
+Generate PDF using a template or layout engine
+
+4. Configuration Requirements
+4.1 Application Properties
+properties# GCP Project Configuration
+spring.cloud.gcp.project-id=my-sample-project-12345
+
+# Pub/Sub Subscription Configuration
+pubsub.subscription-id=my-application-subscription
+5. Implementation Status Summary
+FeatureStatusNotesPublish to Pub/Sub✅ ImplementedVia PubSubServiceSubscribe & receive Pub/Sub❌ MissingAdd PubSubSubscriberServiceMessage processing logic❌ PlaceholderAdd logic in receiveMessage()PostgreSQL Integration⚠ RequiredNeed implementationExternal API consumption⚠ RequiredNeed implementationBasic Auth API⚠ RequiredNeed implementationFTP XML operations⚠ RequiredNeed implementationXML to JSON conversion⚠ RequiredNeed implementationPDF generation⚠ RequiredNeed implementation
+6. Non-Functional Requirements
+
+Security: Basic Auth, secure credentials, encrypted data transfer
+Performance: Real-time processing for Pub/Sub and API calls
+Scalability: Modular design to support future enhancements
+Logging & Monitoring: Centralized logging and error tracking
+
+7. Assumptions
+
+Access to Pub/Sub and PostgreSQL is pre-configured
+External APIs are stable and documented
+FTP system supports standard file operations
+
+8. Dependencies
+
+Google Cloud Pub/Sub
+PostgreSQL
+External APIs
+FTP System
+XML/JSON/PDF libraries

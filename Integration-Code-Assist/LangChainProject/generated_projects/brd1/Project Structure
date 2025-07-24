@@ -1,0 +1,35 @@
+brd1/
+├── gradle/wrapper/
+│   ├── gradle-wrapper.jar
+│   └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/brd1/
+│       │       ├── brd1Application.java  (Main application class)
+│       │       ├── config/
+│       │       │   └── SecurityConfig.java (Basic Auth Configuration)
+│       │       ├── controller/
+│       │       │   └── DataController.java (REST Controller)
+│       │       ├── integration/
+│       │       │   ├── pubsub/
+│       │       │   │   └── PubSubService.java (Pub/Sub Integration)
+│       │       │   ├── postgresql/
+│       │       │   │   └── PostgresqlService.java (PostgreSQL Integration)
+│       │       │   ├── api/
+│       │       │   │   └── ApiService.java (External API Integration)
+│       │       │   └── fip/
+│       │       │   │   └── FipService.java (FIP Integration - Placeholder)
+│       │       ├── transformation/
+│       │       │   └── DataTransformationService.java (XML/JSON/PDF)
+│       │       ├── model/
+│       │       │   └── DataModel.java (Example Data Model)
+│       │       └── exception/
+│       │           └── CustomException.java (Custom Exception Handler)
+│       └── resources/
+│           ├── application.properties
+│           └── logback-spring.xml (Logging Configuration)
+├── build.gradle
+└── settings.gradle

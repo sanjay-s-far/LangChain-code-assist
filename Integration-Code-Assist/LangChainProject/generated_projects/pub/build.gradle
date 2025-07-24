@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+
+    // PostgreSQL Driver
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Google Cloud Pub/Sub
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub:4.1.0'
+
+    // XML Processing
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    //JSON Processing
+    implementation 'org.json:json:20231013'
+
+    // PDF Generation (using iText, example)
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+
+    //Apache Commons IO for file operations
+    implementation 'commons-io:commons-io:2.15.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    //Spring Integration Test
+    testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

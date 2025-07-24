@@ -1,0 +1,33 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.brd1'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.google.cloud:google-cloud-pubsub:1.124.11' // Example Pub/Sub dependency
+    implementation 'org.postgresql:postgresql:42.7.0' // Example PostgreSQL dependency
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml' // XML support
+    implementation 'net.sf.jasperreports:jasperreports:6.20.6' // PDF generation (JasperReports)
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'  // For external API calls
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

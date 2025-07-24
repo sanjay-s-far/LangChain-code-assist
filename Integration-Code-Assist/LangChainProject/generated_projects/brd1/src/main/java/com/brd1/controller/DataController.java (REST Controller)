@@ -1,0 +1,63 @@
+package com.brd1.controller;
+
+import com.brd1.integration.pubsub.PubSubService;
+import com.brd1.integration.postgresql.PostgresqlService;
+import com.brd1.transformation.DataTransformationService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+
+@RestController
+public class DataController {
+
+    @Autowired
+    private PubSubService pubSubService;
+
+    @Autowired
+    private PostgresqlService postgresqlService;
+
+    @Autowired
+    private DataTransformationService dataTransformationService;
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, Authenticated World!";
+    }
+
+
+    @PostMapping("/pubsub/publish")
+    public ResponseEntity<String> publishMessage(@RequestParam String topic, @RequestBody String message) {
+        try {
+            pubSubService.publishMessage(topic, message);
+            return ResponseEntity.ok("Message published to Pub/Sub");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error publishing message: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/postgres/data")
+    public ResponseEntity<String> getPostgresData(@RequestParam String query) {
+        try {
+            String data = postgresqlService.executeQuery(query);
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error getting data from PostgreSQL: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/transform/xml-to-json")
+    public ResponseEntity<String> transformXmlToJson(@RequestBody String xmlData) {
+        try {
+            String jsonData = dataTransformationService.xmlToJson(xmlData);
+            return ResponseEntity.ok(jsonData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error transforming XML to JSON: " + e.getMessage());
+        }
+    }
+}

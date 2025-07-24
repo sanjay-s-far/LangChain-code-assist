@@ -1,0 +1,39 @@
+package com.brd1.integration.api;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class ApiService {
+
+    @Value("${external.api.url}")
+    private String apiUrl;
+
+    @Value("${external.api.username}")
+    private String apiUsername;
+
+    @Value("${external.api.password}")
+    private String apiPassword;
+
+    public String fetchDataFromApi() {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        // Implement basic authentication header (or other auth method)
+        String auth = apiUsername + ":" + apiPassword;
+        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64(auth.getBytes());
+        String authHeader = "Basic " + new String(encodedAuth);
+        headers.set("Authorization", authHeader);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+
+        return response.getBody();
+    }
+}
