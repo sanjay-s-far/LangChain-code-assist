@@ -1,7 +1,0 @@
--- database: c:\Users\sd116131\LangChain-code-assist\Integration-Code-Assist\LangChainProject\Template_pr_memory\chroma.sqlite3
-
--- Use the ▷ button in the top right corner to run the entire file.
-
-SELECT * FROM metadata_table_name
-
-
